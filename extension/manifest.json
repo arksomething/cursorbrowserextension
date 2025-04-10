@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "Cursor Browser Extension",
+  "version": "1.0",
+  "description": "A browser extension for Cursor",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://*.firebaseapp.com/*",
+    "https://*.firebaseio.com/*"
+  ],
+  "action": {
+    "default_popup": "index.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
+} 

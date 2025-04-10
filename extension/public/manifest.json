@@ -22,6 +22,15 @@
   "icons": {
       "16": "icon16.png",
       "48": "icon48.png"
+  },
+  "commands": {
+    "toggle_sidebar": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+L",
+        "mac": "Command+Shift+L"
+      },
+      "description": "Toggle sidebar"
     }
+  }
 
 }

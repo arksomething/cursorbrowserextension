@@ -5,7 +5,6 @@ const OpenAIStream = () => {
 
   useEffect(() => {
     const fetchStream = async () => {
-      console.log("ran")
       try {
         const response = await fetch("https://streamendpoint-n3piq2jhqq-uc.a.run.app", {
           method: "POST",
@@ -44,9 +43,6 @@ const OpenAIStream = () => {
     fetchStream();
   }, []);
   
-
-
-
     return (
         <div className="p-4 bg-gray-100 rounded-md">
             <h2 className="text-lg font-bold">AI Response:</h2>

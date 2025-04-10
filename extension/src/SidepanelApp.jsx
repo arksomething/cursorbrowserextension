@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from 'react';
+import { useAuth } from './AuthContext';
+import Login from './Login';
 import Sidebar from './Sidebar.jsx'
+import User from './User.jsx'
 import OpenAIStream from './OpenAIStream.jsx'
 
 const SidepanelApp = () => {
   const [data, setData] = useState(null);
+  const [route, setRoute] = useState("Chat");
+  const { user, loading } = useAuth();
 
   useEffect(() => {
     try {
@@ -11,14 +16,49 @@ const SidepanelApp = () => {
         setData(response)
       });
     } catch {
-      setData({selectedText: "test", tabText: "text"})
+      setData({selectedText: "test", tabText: "text", activeText: "test", 
+        favicon: "https://example.com/favicon.ico", url: "https://example.com/", title: "Example", activeElement: "None"
+      })
     }
-  
   }, []);
+
+  useEffect(() => {
+    console.log(data)
+  }, [data]);
+
+  useEffect(() => {
+    const handleMessage = (message) => {
+      if (message.action === "sendExistingSidebar") {
+        console.log(message)
+        setData(message.data);
+      }
+    };
+
+    try {
+      chrome.runtime.onMessage.addListener(handleMessage);
+      return () => {
+        chrome.runtime.onMessage.removeListener(handleMessage);
+      };
+    } catch (err) {
+      console.error(err)
+    }
+
+  }, []);
+
+
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!user) {
+    return <Login />;
+  }
 
   return (
     <>
-      <Sidebar data={data}/>
+      {route == "Chat" && <Sidebar data={data} setRoute={setRoute}/>}
+      {route == "User" && <User setRoute={setRoute}/>}
       {/* <OpenAIStream /> */}
     </>
   );

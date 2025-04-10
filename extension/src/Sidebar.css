@@ -9,11 +9,27 @@
   display: flex;
   flex-direction: column;
   z-index: 99999;
-  overflow: auto;
+  overflow: hidden;
 }
 
 .sidebar-body {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Prevents overall expansion */
+}
+
+.sidebar-header-right {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+}
+
+.sidebar-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 1em;
 }
 .chat-input { 
   box-sizing: border-box; /* Apply border-box model to all elements */
@@ -68,4 +84,36 @@
   display: flex;
   flex-direction: row;
   gap: 1em;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.input-wrapper-2 {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+
+.messages-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  padding: 1em;
+  overflow-y: auto; /* Allows scrolling */
+  max-height: 60vh; /* Instead of using `calc()`, respect parent's height */
+  flex-grow: 1; /* Ensures it takes up remaining space without expanding beyond */
+  min-height: 0; /* Critical: prevents it from making the parent grow */
+}
+
+.messages-wrapper > * {
+  flex-grow: 0; /* Prevents child elements from growing */
+  flex-shrink: 0; /* Prevents child elements from shrinking */
+}
+
+.messages-main-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Keeps scrolling inside `.messages-wrapper` */
+  min-height: 0; /* Ensures it does not force extra height */
 }

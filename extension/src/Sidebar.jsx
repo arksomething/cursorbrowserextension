@@ -1,33 +1,67 @@
 import './Sidebar.css';
 import TextareaAutosize from 'react-textarea-autosize';
 import { useState, useEffect, useRef } from 'react';
-import ReactMarkdown from 'react-markdown'
+import MarkdownRenderer from './MarkdownRenderer';
+import Dropdown from './Dropdown';
+import TabIcon from './TabIcon';
+import { useAuth } from './AuthContext';
 
 
-const Sidebar = ({ data }) => {
+
+const Sidebar = ({ data, setRoute }) => {
   const [prompt, setPrompt] = useState('');
   const [selectedText, setSelectedText] = useState('');
+  const [activeText, setActiveText] = useState('');
   const [tabText, setTabText] = useState('');
   const [messages, setMessages] = useState([]); 
+  const [selectedModel, setSelectedModel] = useState('gpt-4o-mini');
+
+  
+  const { user, loading } = useAuth();
 
   const textareaRef = useRef(null);
+  const messagesEndRef = useRef(null);
 
+  const modelOptions = [
+    { value: 'gpt-4o-mini', label: 'gpt-4o-mini' },
+    { value: 'gpt-4', label: 'gpt-4' },
+    { value: 'gpt-4o', label: 'gpt-4o' }
+  ];
+  
   // Update prompt when data changes
   useEffect(() => {
     if (data) {
-      console.log(data.tabText)
       setSelectedText(data.selectedText);
       setTabText(data.tabText);
+      setActiveText(data.activeText);
     }
   }, [data]);
 
   useEffect(() => {
-    textareaRef.current?.focus();
-  }, []);
+    if (!loading) {
+      const interval = setInterval(() => {
+        if (textareaRef.current && document.visibilityState === 'visible') {
+          textareaRef.current.focus();
+          console.log('Textarea focused');
+          clearInterval(interval);
+        }
+      }, 500); // Retry every 500ms
+      
+      return () => clearInterval(interval); // Cleanup on unmount
+    }
+  }, [loading]); // Only try to focus when `loading` changes
 
-  const handleSubmit = (e) => {
+  const handleModelChange = (value) => {
+    setSelectedModel(value);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!prompt.trim()) return;
+
+    const idToken = await user.getIdToken();
+    console.log(idToken);
+
     setMessages(prevMessages => [...prevMessages, {role:"user", content: prompt}]);
 
     const fetchStream = async () => {
@@ -36,9 +70,16 @@ const Sidebar = ({ data }) => {
           method: "POST",
           headers: {
               "Content-Type": "application/json",
-              "Accept": "text/event-stream"
+              "Accept": "text/event-stream",
+              "Authorization": `Bearer ${idToken}`
           },
-          body: JSON.stringify({ tab: tabText, selected: selectedText, userPrompt: prompt, messages })
+          body: JSON.stringify({ 
+            tab: tabText, 
+            selected: selectedText, 
+            userPrompt: prompt, 
+            messages,
+            model: selectedModel 
+          })
         });
   
         if (!response.body) throw new Error('ReadableStream not supported in this browser.');
@@ -86,11 +127,9 @@ const Sidebar = ({ data }) => {
     setPrompt("");
   };
 
-
-
   // Utility function to format the selected text
   const formatSelectedText = (text) => {
-    const maxLength = 30;
+    const maxLength = 20;
     if (text.length <= maxLength) {
       return text; // Return the text as is if it's within the limit
     }
@@ -101,74 +140,39 @@ const Sidebar = ({ data }) => {
   };
 
   return (
-    <div style={{
-      position: 'fixed',
-      right: 0,
-      top: 0,
-      width: '100%',
-      height: '100vh',
-      background: 'white',
-      boxShadow: '-2px 0px 10px rgba(0, 0, 0, 0.1)',
-      display: 'flex',
-      flexDirection: 'column',
-      zIndex: 99999,
-      overflow: 'auto',
-      
-    }}>
-      <div style={{ flex: 1 }}>
-        <h2 style={{
-          margin: '1em'
-        }}>Chat</h2>
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '1em',
-          padding: '1em',
-          overflowY: 'auto',
-          maxHeight: '60vh'
-        }}>
-          {messages.map((msg, index) => (
-            <div key={index} style={{
-              textAlign: msg.role === "user" ? 'right' : 'left',
-            }}>
-              <ReactMarkdown children={msg.content}/>
-            </div>
-          ))}
+    <div className="sidebar">
+      <div className="sidebar-body">
+        <div className='sidebar-header'>
+          <h2>Chat</h2>
+          <div className='sidebar-header-right'>
+            <button onClick={() => setRoute("User")}>User</button>
+          </div>
+        </div>
+        <div className="messages-main-wrapper">
+          <div className="messages-wrapper">
+            {messages.map((msg, index) => (
+              <div key={index} style={{
+                textAlign: msg.role === "user" ? 'right' : 'left',
+              }}>
+                <MarkdownRenderer 
+                  content={msg.content}
+                  onCodeApplied={(response) => {
+                    console.log('Code application response:', response);
+                  }}
+                />
+              </div>
+            ))}
+            <div style={{ height: '100px' }}></div>
+            <div ref={messagesEndRef} />
+          </div>
         </div>
       </div>
 
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '0.5em',
-        backgroundColor: '#ffffff',
-        padding: '1em',
-        borderRadius: '8px',
-        margin: '4px',
-        border: '1px solid #000000'
-      }}>
+      <div className="input-wrapper" >
         <form onSubmit={handleSubmit} style={{ width: '100%' }}>
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '0.5em'
-          }}>
+          <div className="input-wrapper-2">
             <TextareaAutosize
-              ref={textareaRef}
-              maxRows={5}
-              minRows={1}
-              placeholder="Plan, build, write anything"
-              style={{
-                boxSizing: 'border-box',
-                width: '100%',
-                padding: '10px',
-                border: 'none',
-                outline: 'none',
-                borderRadius: '4px',
-                fontFamily: 'inherit',
-                resize: 'none'
-              }}
-              value={prompt}
+              ref={textareaRef} maxRows={5} minRows={1} placeholder="Plan, build, write anything" className="chat-input" value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
@@ -177,34 +181,22 @@ const Sidebar = ({ data }) => {
                 }
               }}
             />
-            <div style={{
-              flex: 1,
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              fontSize: '12px'
-            }}>
-              <div style={{
-                display: 'flex',
-                flexDirection: 'row',
-                gap: '1em'
-              }}>
-                <p>gpt-4o-mini</p>
+            <div className="input-bottom">
+              <div className="input-bottom-left" >
+                <Dropdown
+                  options={modelOptions}
+                  value={selectedModel}
+                  onChange={handleModelChange}
+                  placeholder="Select a model"
+                />
+                <TabIcon data={data}/>
                 {selectedText && (
                   <p>"{formatSelectedText(selectedText)}"</p>
                 )}
               </div>
               <button
                 type="submit"
-                style={{
-                  backgroundColor: '#007bff',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  padding: '8px 16px',
-                  cursor: 'pointer',
-                  fontSize: '12px'
-                }}
+                className='send-button'
                 disabled={!prompt.trim()}
               >
                 Send
