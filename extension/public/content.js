@@ -1,6 +1,5 @@
 console.log("New content script loaded - keyboard listener enabled");
 
-let isActive = false;
 var activeElement;
 
 chrome.runtime.sendMessage({
@@ -9,87 +8,29 @@ chrome.runtime.sendMessage({
 });
 
 
-function ensureFocus(element) {
-  if (!element) return false;
-  
-  try {
-    element.focus();
-    setTimeout(() => {
-      element.focus();
-      element.dispatchEvent(new FocusEvent('focus', { bubbles: true }));
-      element.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-    }, 50);
-    return document.activeElement === element;
-  } catch (error) {
-    console.error("Focus error:", error);
-    return false;
-  }
-}
-
 function getFavicon() {
-  // First, try to get the favicon from <link rel="icon"> or <link rel="shortcut icon">
   const iconLink = document.querySelector("link[rel~='icon'], link[rel='shortcut icon']");
   if (iconLink && iconLink.href) {
     return iconLink.href;
   }
 
-  // If not found, try looking for an apple-touch-icon (for mobile)
   const appleIcon = document.querySelector("link[rel='apple-touch-icon']");
   if (appleIcon && appleIcon.href) {
     return appleIcon.href;
   }
 
-  // If no favicon found, fallback to /favicon.ico
   return `${window.location.origin}/favicon.ico`;
 }
 
-const toggleSidebarMode = () => {
-  isActive = !isActive;
-
-  if (isActive) {
-    
-    // Send data to the sidebar
-    chrome.runtime.sendMessage({
-      action: "updateSidebar",
-      data: ingestData()
-    });
-  } else {
-    chrome.runtime.sendMessage({action: "closeSidePanel"});
-  }
-};
-
 document.addEventListener('keydown', (event) => {
-  if (event.ctrlKey && event.key.toLowerCase() === 'b') {
-    event.preventDefault();
-    const highlightedText = window.getSelection().toString().trim();
-    
-    if (highlightedText && isActive) {
-      chrome.runtime.sendMessage({
-        action: "updateExistingSidebar",
-        data: ingestData()
-      });
-    
-    } else {
-      chrome.runtime.sendMessage({
-        action: "updateExistingSidebar",
-        data: ingestData()
-      });
-      chrome.runtime.sendMessage({
-        action: "toggleSidebar",
-      });
-      toggleSidebarMode();
-      
-    }
-  }
-
-  if (event.ctrlKey && event.key.toLowerCase() === 'b') {
+  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'b') {
     event.preventDefault();
     const highlightedText = window.getSelection().toString().trim();
     
     if (highlightedText == "") {
-      console.log("togglingSidebar...")
       chrome.runtime.sendMessage({
         action: "toggleSidebar",
+        data: ingestData(),
       });
     } 
 
@@ -98,6 +39,11 @@ document.addEventListener('keydown', (event) => {
       data: ingestData()
     });
   }
+
+  // if (event.ctrlKey && event.key.toLowerCase() === 'y') { 
+  //   simulateSelectAllAndDelete()
+  //   simulatePaste("testing text")
+  // }
 
 }, true);
 
@@ -112,7 +58,7 @@ document.addEventListener("focus", (event) => {
     action: "updateExistingSidebar",
     data: ingestData()
   });
-}, true); // Use capture phase to catch all focus events
+}, true);
 
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -136,6 +82,25 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 });
 
+//helper functions below
+
+function ensureFocus(element) {
+  if (!element) return false;
+  
+  try {
+    element.focus();
+    setTimeout(() => {
+      element.focus();
+      element.dispatchEvent(new FocusEvent('focus', { bubbles: true }));
+      element.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    }, 50);
+    return document.activeElement === element;
+  } catch (error) {
+    console.error("Focus error:", error);
+    return false;
+  }
+}
+
 function simulatePaste(text) {
   if (!activeElement) {
     console.error("No active element found");
@@ -143,12 +108,6 @@ function simulatePaste(text) {
   }
 
   try {
-    if (activeElement.tagName === "INPUT" || activeElement.tagName === "TEXTAREA") {
-      activeElement.value = "";
-    } else if (activeElement.isContentEditable) {
-      activeElement.textContent = "";
-    }
-
     const clipboardData = new DataTransfer();
     clipboardData.setData('text/plain', text);
 
@@ -159,9 +118,20 @@ function simulatePaste(text) {
     });
 
     activeElement.dispatchEvent(pasteEvent);
-
     activeElement.dispatchEvent(new Event('input', { bubbles: true }));
     activeElement.dispatchEvent(new Event('change', { bubbles: true }));
+
+    if (activeElement.tagName === "INPUT" || activeElement.tagName === "TEXTAREA") {
+      if (activeElement.value === "") {
+        activeElement.value = text;
+      }
+
+    } else if (activeElement.isContentEditable) {
+      if (activeElement.textContent === "") {
+        activeElement.textContent = text;
+      }
+
+    }
   } catch (error) {
     console.error("Error in simulatePaste:", error);
   }
@@ -177,17 +147,15 @@ function simulateSelectAllAndDelete() {
   const targetElement = activeElement || document.activeElement;
   ensureFocus(targetElement);
 
-  // Simulate "Ctrl+A" (Select All) to select the content
   const selectAllEvent = new KeyboardEvent('keydown', {
     key: 'a',
-    code: 'KeyA',
+    code: 'KeyA', 
     keyCode: 65,
     ctrlKey: true,
     bubbles: true,
   });
   document.activeElement.dispatchEvent(selectAllEvent);
 
-  // Simulate "Backspace" to delete the selected content
   const deleteEvent = new KeyboardEvent('keydown', {
     key: 'Backspace',
     code: 'Backspace',
@@ -206,14 +174,18 @@ function ingestData() {
   const title = document.title;
 
   activeElement = targetElement;
+
+  let targetEditable = false;
   
   let activeText = "";
   if (targetElement && (targetElement.tagName === "INPUT" || targetElement.tagName === "TEXTAREA")) {
     activeText = targetElement.value;
+    targetEditable = true;
   } else if (targetElement && targetElement.isContentEditable) {
     activeText = targetElement.innerText;
+    targetEditable = true;
   }
 
-  const data = { selectedText: highlightedText, tabText, activeText, favicon, url, title, targetElement }
+  const data = { selectedText: highlightedText, tabText, activeText, favicon, url, title, targetEditable }
   return data
 }

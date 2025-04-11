@@ -60,8 +60,6 @@ const Sidebar = ({ data, setRoute }) => {
     if (!prompt.trim()) return;
 
     const idToken = await user.getIdToken();
-    console.log(idToken);
-
     setMessages(prevMessages => [...prevMessages, {role:"user", content: prompt}]);
 
     const fetchStream = async () => {
@@ -78,7 +76,7 @@ const Sidebar = ({ data, setRoute }) => {
             selected: selectedText, 
             userPrompt: prompt, 
             messages,
-            model: selectedModel 
+            model: "gpt-4o-mini" 
           })
         });
   
@@ -145,7 +143,7 @@ const Sidebar = ({ data, setRoute }) => {
         <div className='sidebar-header'>
           <h2>Chat</h2>
           <div className='sidebar-header-right'>
-            <button onClick={() => setRoute("User")}>User</button>
+            <button className="main-button" onClick={() => setRoute("User")}>User</button>
           </div>
         </div>
         <div className="messages-main-wrapper">
@@ -156,6 +154,7 @@ const Sidebar = ({ data, setRoute }) => {
               }}>
                 <MarkdownRenderer 
                   content={msg.content}
+                  data={data}
                   onCodeApplied={(response) => {
                     console.log('Code application response:', response);
                   }}
@@ -189,18 +188,14 @@ const Sidebar = ({ data, setRoute }) => {
                   onChange={handleModelChange}
                   placeholder="Select a model"
                 />
-                <TabIcon data={data}/>
-                {selectedText && (
-                  <p>"{formatSelectedText(selectedText)}"</p>
-                )}
+                <div className='input-bottom-middle'>
+                  <TabIcon data={data}/>
+                  {selectedText && (
+                    <p className='input-selected-text'>"{formatSelectedText(selectedText)}"</p>
+                  )}
+                </div>
               </div>
-              <button
-                type="submit"
-                className='send-button'
-                disabled={!prompt.trim()}
-              >
-                Send
-              </button>
+              <button type="submit" className='send-button' disabled={!prompt.trim()}>Send</button>
             </div>
           </div>
         </form>

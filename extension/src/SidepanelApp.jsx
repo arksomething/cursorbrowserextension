@@ -17,14 +17,27 @@ const SidepanelApp = () => {
       });
     } catch {
       setData({selectedText: "test", tabText: "text", activeText: "test", 
-        favicon: "https://example.com/favicon.ico", url: "https://example.com/", title: "Example", activeElement: "None"
+        favicon: "https://example.com/favicon.ico", url: "https://example.com/", title: "Example", targetElement: "None"
       })
     }
   }, []);
 
+  // useEffect(() => {
+  //   console.log(data)
+  // }, [data]);
+
   useEffect(() => {
-    console.log(data)
-  }, [data]);
+    const handleKeyDown = (event) => {
+      if (event.ctrlKey && event.key === "b") { // Detect Ctrl + K
+        event.preventDefault();
+        chrome.runtime.sendMessage({ action: "toggleSidebar", data: {} });
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
 
   useEffect(() => {
     const handleMessage = (message) => {

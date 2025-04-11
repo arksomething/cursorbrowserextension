@@ -3,7 +3,7 @@ import { logout } from './firebase'; // Adjust path if necessary
 
 const LogoutButton = () => {
     return (
-        <button onClick={logout}>
+        <button className="main-button" onClick={logout}>
             Logout
         </button>
     );

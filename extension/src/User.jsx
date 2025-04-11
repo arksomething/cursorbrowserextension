@@ -43,7 +43,7 @@ const User = ({ setRoute }) => {
     <div className='user'>
       <h2 className='user-title'>User Profile</h2>
       {userInfo ? (
-        <div>
+        <div className='user-info'>
           <p>Name: {userInfo.name}</p>
           <p>Email: {userInfo.email}</p>
           <p>Plan: {userInfo.plan}</p>
@@ -55,8 +55,8 @@ const User = ({ setRoute }) => {
       )}
       {loadingContent && <div>Loading...</div>}
       <div className='user-button-container'>
-        <LogoutButton />
-        <button onClick={() => setRoute("Chat")}>Chat</button>
+        <LogoutButton className="main-button"/>
+        <button className="main-button" onClick={() => setRoute("Chat")}>Chat</button>
       </div>
     </div>
     

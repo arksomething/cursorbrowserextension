@@ -8,7 +8,7 @@ import "./MarkdownRenderer.css"
 
 import { useState } from 'react';
 
-const CodeBlock = ({ language, value, handleCopy, applyCode, onCodeApplied }) => {
+const CodeBlock = ({ language, value, handleCopy, applyCode, onCodeApplied, data }) => {
   const [codeStatus, setCodeStatus] = useState("Apply");
   const [copyStatus, setCopyStatus] = useState("Copy");
 
@@ -34,11 +34,11 @@ const CodeBlock = ({ language, value, handleCopy, applyCode, onCodeApplied }) =>
           <p>markdown</p>
           <div className="code-header-right">
             <button className='code-button code-pre' onClick={handleCopyClick}>{copyStatus}</button>
-            <button className='code-button code-pre' onClick={handleApply}>{codeStatus}</button>
+            <button className={`code-button code-pre ${!data.targetEditable ? "disabled" : ""}`} onClick={handleApply}>{data.targetEditable ? codeStatus : "Select Field"}</button>
           </div>
         </div>
         <div className="text-content">
-          <p>{value}</p>
+          <ReactMarkdown>{value}</ReactMarkdown>
         </div>
       </div>
     );
@@ -58,7 +58,7 @@ const CodeBlock = ({ language, value, handleCopy, applyCode, onCodeApplied }) =>
         <p>{language}</p>
         <div className="code-header-right">
           <button className='code-button code-pre' onClick={handleCopyClick}>{copyStatus}</button>
-          <button className='code-button code-pre' onClick={handleApply}>{codeStatus}</button>
+          <button className={`code-button code-pre ${!data.targetEditable ? "disabled" : ""}`} onClick={handleApply}>{data.targetEditable ? codeStatus : "Select Field"}</button>
         </div>
       </div>
       <pre className="code-content code-pre">
@@ -70,7 +70,7 @@ const CodeBlock = ({ language, value, handleCopy, applyCode, onCodeApplied }) =>
 };
 
 // MarkdownRenderer component
-const MarkdownRenderer = ({ content, onCodeApplied }) => {
+const MarkdownRenderer = ({ content, onCodeApplied, data }) => {
 
   const transformMathDelimiters = (text) => {
     return text
@@ -136,6 +136,7 @@ const MarkdownRenderer = ({ content, onCodeApplied }) => {
             handleCopy={() => handleCopy(children)}
             applyCode={() => applyCode(children)}
             onCodeApplied={onCodeApplied}
+            data={data}
           />;
         },
       }}

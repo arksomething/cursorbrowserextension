@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "Cursor.ai-like Shortcuts",
+  "name": "Sophon - Chat with context + autofill",
   "version": "1.0",
-  "description": "A simple Chrome extension",
-  "permissions": ["storage", "activeTab", "scripting", "tabs", "sidePanel"],
+  "description": "High fidelity AI chat in Chrome. Chat with browser context and autofill",
+  "permissions": ["tabs", "sidePanel"],
   "background": {
     "service_worker": "background.js"
   },
