@@ -29,6 +29,7 @@ const ResetPassword = ({ setCurrentRoute }) => {
         <div className="form-group">
           <label htmlFor="email">Email</label>
           <input
+            className='form-field'
             type="email"
             id="email"
             value={email}

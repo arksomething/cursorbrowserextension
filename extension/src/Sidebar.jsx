@@ -95,6 +95,7 @@ const Sidebar = ({ data, setRoute }) => {
           done = doneReading;
           if (value) {
               const chunk = decoder.decode(value, { stream: true })
+              console.log(chunk)
               setMessages(prevMessages => {
                 if (prevMessages.length === 0) {
                   return [...prevMessages, { role: "assistant", content: "" }]
@@ -120,7 +121,6 @@ const Sidebar = ({ data, setRoute }) => {
         console.error('Error fetching stream:', error);
       }
     };
-  
     fetchStream();
     setPrompt("");
   };
@@ -195,7 +195,7 @@ const Sidebar = ({ data, setRoute }) => {
                   )}
                 </div>
               </div>
-              <button type="submit" className='send-button' disabled={!prompt.trim()}>Send</button>
+              <button type="submit" className='main-button' disabled={!prompt.trim()}>Send</button>
             </div>
           </div>
         </form>

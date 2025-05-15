@@ -22,30 +22,37 @@ function getFavicon() {
   return `${window.location.origin}/favicon.ico`;
 }
 
-document.addEventListener('keydown', (event) => {
-  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'b') {
-    event.preventDefault();
+// document.addEventListener('keydown', (event) => {
+//   if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'b') {
+//     event.preventDefault();
+//     const highlightedText = window.getSelection().toString().trim();
+  
+
+//     chrome.runtime.sendMessage({
+//       action: "updateExistingSidebar",
+//       data: ingestData()
+//     });
+//   }
+
+//   // if (event.ctrlKey && event.key.toLowerCase() === 'y') { 
+//   //   simulateSelectAllAndDelete()
+//   //   simulatePaste("testing text")
+//   // }
+
+// }, true);
+
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+  if (request.action === "commandSend") {
     const highlightedText = window.getSelection().toString().trim();
-    
-    if (highlightedText == "") {
-      chrome.runtime.sendMessage({
-        action: "toggleSidebar",
-        data: ingestData(),
-      });
-    } 
 
     chrome.runtime.sendMessage({
       action: "updateExistingSidebar",
       data: ingestData()
     });
+
+    sendResponse(highlightedText)
   }
-
-  // if (event.ctrlKey && event.key.toLowerCase() === 'y') { 
-  //   simulateSelectAllAndDelete()
-  //   simulatePaste("testing text")
-  // }
-
-}, true);
+});
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.tabChanged) {
@@ -72,7 +79,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       setTimeout(() => {
         simulateSelectAllAndDelete()
         simulatePaste(message.code)
-        triggerInputEvent(activeElement);
+        // triggerInputEvent(activeElement);
         sendResponse({ status: "Code inserted" });
       }, 100);
     } else {

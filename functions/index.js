@@ -165,3 +165,132 @@ exports.streamEndpoint = onRequest({ cors: true, secrets: [OPENAI_API_KEY] }, as
     }
   })();
 });
+
+
+//stripe shit
+
+exports.checkoutIntent = onRequest({ cors: true }, async (req, res) => {
+  const { uid } = req.body;
+
+  try {
+    const session = await stripe.checkout.sessions.create({
+      line_items: [
+        {
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: 'Premium + Credits',
+              description: 'Provides access to all premium features (like email saving) and gives 150 email unlock credits. Enough to get through a recruiting season!',
+            },
+            unit_amount: 499,
+          },
+          quantity: 1,
+        },
+      ],
+      mode: 'payment',
+      success_url: 'https://outlink.work/success',
+      cancel_url: 'https://outlink.work/cancel',
+      metadata: {uid: uid}
+    });
+   
+    res.send({url: session.url});
+  } catch (err) {
+    console.error("Error creating checkout session:", err);
+    res.status(500).send({ error: "Failed to create checkout session." });
+  }
+});
+
+exports.stripeWebhook = onRequest({ cors: true, rawBody: true }, async (req, res) => {
+  if (req.method !== 'POST') {
+    return res.status(405).send('Method Not Allowed');
+  }
+
+  const sig = req.headers['stripe-signature'];
+  let event;
+
+  try {
+    const rawBody = req.rawBody.toString('utf8');
+    event = stripe.webhooks.constructEvent(
+      rawBody,
+      sig,
+      endpointSecret
+    );
+  } catch (err) {
+    console.error(`Webhook signature verification failed: ${err.message}`);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  // Handle the event
+  try {
+    if (event.type === 'checkout.session.completed') {
+      const session = event.data.object;
+      const userId = session.metadata.uid;
+
+      // Check if transaction already exists
+      const transactionRef = db.collection("transactions").doc(session.id);
+      const transactionDoc = await transactionRef.get();
+
+      if (!transactionDoc.exists) {
+        await transactionRef.set({
+          userId: userId,
+          amount: session.amount_total,
+          currency: session.currency,
+          status: session.payment_status,
+          quantity: session.line_items.data[0].quantity,
+          productName: session.line_items.data[0].price_data.product_data.name,
+          created: admin.firestore.FieldValue.serverTimestamp(),
+        });
+
+        // Update user's credit balance and premium status
+        const userRef = db.collection("users").doc(userId);
+        const userDoc = await userRef.get();
+        
+        if (!userDoc.exists) {
+          // If user document doesn't exist, create it with initial credits and premium status
+          await userRef.set({
+            credits: 100,
+            premium: true
+          });
+        } else {
+          // If user document exists, increment credits and set premium
+          await userRef.set({
+            credits: admin.firestore.FieldValue.increment(150),
+            premium: true
+          }, { merge: true });
+        }
+
+        console.log('Transaction recorded and credits added to user account');
+      } else {
+        console.log('Transaction already processed, skipping');
+      }
+    }
+  } catch (error) {
+    console.error('Error processing webhook:', error);
+  }
+
+  res.json({received: true});
+});
+
+exports.retrieveFromDatabase = onRequest({ cors: true }, async (req, res) => {
+  const { name } = req.body;
+
+  try {
+    if (!name) {
+      return res.status(400).send({ error: "Name is required." });
+    }
+
+    const userRef = db.collection("eeg").doc(name);
+    const docSnap = await userRef.get();
+
+    if (!docSnap.exists) {
+      return res.status(404).send({ error: "No data found for the given name." });
+    }
+
+    const data = docSnap.data();
+    res.status(200).send(data);
+
+  } catch (err) {
+    console.error("Error retrieving content from Firestore:", err);
+    res.status(500).send({ error: err.message || "Unknown error" });
+  }
+});

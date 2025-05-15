@@ -57,6 +57,7 @@ const User = ({ setRoute }) => {
       <div className='user-button-container'>
         <LogoutButton className="main-button"/>
         <button className="main-button" onClick={() => setRoute("Chat")}>Chat</button>
+        <button className="main-button" onClick={() => setRoute("Subscribe")}>Subscribe</button>
       </div>
     </div>
     

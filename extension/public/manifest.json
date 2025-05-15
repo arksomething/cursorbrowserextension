@@ -1,16 +1,18 @@
 {
   "manifest_version": 3,
   "name": "Sophon - Chat with context + autofill",
-  "version": "1.0",
+  "version": "1.0.0.4",
   "description": "High fidelity AI chat in Chrome. Chat with browser context and autofill",
   "permissions": ["tabs", "sidePanel"],
   "background": {
     "service_worker": "background.js"
   },
+  "host_permissions": ["<all_urls>"],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"]
+      "js": ["content.js"],
+      "run_at": "document_idle"
     }
   ],
   "action": {
@@ -22,15 +24,25 @@
   "icons": {
       "16": "icon16.png",
       "48": "icon48.png"
-  },
+  },  
   "commands": {
     "toggle_sidebar": {
       "suggested_key": {
-        "default": "Ctrl+Shift+L",
-        "mac": "Command+Shift+L"
+        "default": "Alt+L",
+        "mac": "Alt+L"
       },
       "description": "Toggle sidebar"
+    },
+    "_execute_action": {
+      "suggested_key": {
+        "windows": "Alt+L",
+        "mac": "Alt+L",
+        "chromeos": "Alt+L",
+        "linux": "Alt+L"
+      }
     }
+    
   }
+
 
 }

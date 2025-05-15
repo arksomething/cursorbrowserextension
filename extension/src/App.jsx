@@ -6,7 +6,12 @@ import Logo from './assets/logo.png';
 const App = () => {
   return (
     <div style={popupStyle}>
-      <p style={textStyle}>Reload your tabs, then press Ctrl + B to toggle the sidebar.</p>
+      <div style={leftDivStyle}>
+        <p style={textStyle}>Reload your current tabs, then press Alt + L to toggle the sidebar.</p>
+        {/* <button style={buttonStyle} onClick={() => chrome.runtime.sendMessage({action: "toggleSidebarFromPopup"})}>
+          Toggle Sidebar
+        </button> */}
+      </div>
       <img src={Logo} alt="Sophon Logo"  
         style={{ width: 48, height: 48 }}
       />
@@ -24,6 +29,20 @@ const popupStyle = {
   alignItems: "center",
   textAlign: "center",
   backgroundColor: "white",
+};
+
+const leftDivStyle = {
+  display: "flex",
+  gap: "12px",
+  flexDirection: "column"
+};
+
+const buttonStyle = {
+  padding: "0.3em 0.6em",
+  borderRadius: "8px",
+  background: "#000",
+  color: "white",
+  border: "none",
 };
 
 const textStyle = {

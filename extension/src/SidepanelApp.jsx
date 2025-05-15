@@ -4,6 +4,7 @@ import Login from './Login';
 import Sidebar from './Sidebar.jsx'
 import User from './User.jsx'
 import OpenAIStream from './OpenAIStream.jsx'
+import Subscribe from './Subscribe.jsx'
 
 const SidepanelApp = () => {
   const [data, setData] = useState(null);
@@ -43,6 +44,7 @@ const SidepanelApp = () => {
     const handleMessage = (message) => {
       if (message.action === "sendExistingSidebar") {
         console.log(message)
+        console.log(message)
         setData(message.data);
       }
     };
@@ -72,6 +74,7 @@ const SidepanelApp = () => {
     <>
       {route == "Chat" && <Sidebar data={data} setRoute={setRoute}/>}
       {route == "User" && <User setRoute={setRoute}/>}
+      {route == "Subscribe" && <Subscribe />}
       {/* <OpenAIStream /> */}
     </>
   );

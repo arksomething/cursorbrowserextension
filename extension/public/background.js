@@ -2,40 +2,41 @@ console.log("Background script running!");
 
 let activeData = {selectedText: "", tabText: "", activeText: "", favicon: "", url: "", title: "", targetElement: ""};
 
-let isActive = false;
+let isActive = true;
 
-chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
-    if (request.action === "getIsActive") {
-        sendResponse(isActive);
-    }
+chrome.commands.onCommand.addListener(async (command) => {
+  console.log(`Command received: ${command}, cur isActive: ${isActive}`);
 
-});
+  if (isActive) {
+    await chrome.windows.getCurrent(w => chrome.sidePanel.open({windowId: w.id}))
+    isActive = !isActive;
+    return
+  }
 
-chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
-  
-  if (request.action === "toggleSidebar") {
-    console.log("Toggling received")
-    if (isActive) {
-      await chrome.sidePanel.open({ windowId: sender.tab.windowId });
-      activeData = request.data
+  let queryOptions = { active: true, lastFocusedWindow: true };
+  let [tab] = await chrome.tabs.query(queryOptions);
 
-    } else {
-      console.log("Attempting close...")
-      await chrome.sidePanel.setOptions({ enabled: false });
-      await chrome.sidePanel.setOptions({ enabled: true });
-    }
+  const response = await chrome.tabs.sendMessage(tab.id, {action: "commandSend"})
+
+  if (!isActive && !response) {
+    await chrome.sidePanel.setOptions({ enabled: false });
+    await chrome.sidePanel.setOptions({ enabled: true });
     isActive = !isActive;
   }
 });
 
 
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
+    if (request.action === "getIsActive") {
+        sendResponse(isActive);
+    }
+});
+
+chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
 
   if (request.action === "updateExistingSidebar") {
-    console.log("Called updateExistingSidebar, sending to sidebar from background")
-
+    console.log("Called updateExistingSidebar, activeData: ", request.data)
     activeData = request.data
-    console.log(activeData)
 
     chrome.runtime.sendMessage({
       action: "sendExistingSidebar",
@@ -62,28 +63,25 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "requestData") {
-    console.log("Requesting activeData from Sidebar, activeData: ", activeData)
     sendResponse(activeData)
   }
 });
 
 chrome.tabs.onActivated.addListener(function (activeInfo) {
+  console.log("Tab activated")
   chrome.tabs.get(activeInfo.tabId, function (tab) {
     if (chrome.runtime.lastError) {
       console.error(chrome.runtime.lastError);
       return;
     }
-
-    console.log("Active tab URL: " + tab.url);
-
     // Ensure the tab is in a 'complete' state
     if (tab.status === "complete") {
       chrome.tabs.sendMessage(activeInfo.tabId, { tabChanged: true }, function (response) {
         if (chrome.runtime.lastError) {
           console.warn("Content script not available on this tab. Err: " + chrome.runtime.lastError);
         } else {
-          console.log("Response from content script: ", response);
           activeData = response;
+          console.log("Active data updated, response: ", response)
           chrome.runtime.sendMessage({
             action: "sendExistingSidebar",
             data: response
@@ -100,12 +98,13 @@ chrome.tabs.onActivated.addListener(function (activeInfo) {
 
 chrome.tabs.onUpdated.addListener((tabId, change, tab) => {
   if (tab.active && change.url) {
-      console.log("onUpdated: you are here: "+change.url);  
+      console.log("Tab updated, sending message to content script")
       chrome.tabs.sendMessage(tabId, { tabChanged: true }, function (response) {
         if (chrome.runtime.lastError) {
           console.warn("Content script not available on this tab. Err: " + chrome.runtime.lastError);
         } else {
-          console.log("Response from content script: ", response);
+          activeData = response
+          console.log("Active data updated, response: ", response)
           chrome.runtime.sendMessage({
             action: "sendExistingSidebar",
             data: response
