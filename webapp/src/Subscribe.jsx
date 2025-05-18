@@ -1,19 +1,30 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Subscribe.css';
 import { useAuth } from './AuthContext';
+import { STRIPE_CHECKOUT_ENDPOINT, STRIPE_PRODUCTS } from './constants';
 
 export default function Subscribe({ setRoute }) {
   const { user } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   
   const handleCheckout = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+    
     try {
-      const response = await fetch('https://createcheckoutsession-n3piq2jhqq-uc.a.run.app', {
+      const response = await fetch(STRIPE_CHECKOUT_ENDPOINT, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ lookup_key: 'sophon_plus', uid: user.uid })
+        body: JSON.stringify({ 
+          lookup_key: STRIPE_PRODUCTS.PLUS, 
+          uid: user.uid,
+          success_url: window.location.origin + '/success',
+          cancel_url: window.location.origin + '/cancel'
+        })
       });      
       
       if (!response.ok) {
@@ -21,16 +32,19 @@ export default function Subscribe({ setRoute }) {
       }
       
       const url = await response.text();
-      // Open Stripe checkout in a new tab instead of redirecting
-      chrome.tabs.create({ url });
+      window.location.href = url;
     } catch (err) {
       console.error('Error:', err);
+      setError('Failed to start checkout process. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="pricing-page">
       <h1 className="pricing-header">Pricing</h1>
+      {error && <div className="error-message">{error}</div>}
       <section className="plans-container">
         <div className="product premium">
           <div className="description">
@@ -45,8 +59,12 @@ export default function Subscribe({ setRoute }) {
               <li>Unlimited Base Models</li>
               <li>Monthly Access to Premium Models</li>
             </ul>
-            <button className="upgrade-button" onClick={handleCheckout}>
-              Upgrade to Plus
+            <button 
+              className="upgrade-button" 
+              onClick={handleCheckout}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Loading...' : 'Upgrade to Plus'}
             </button>
           </div>
         </div>
@@ -66,7 +84,11 @@ export default function Subscribe({ setRoute }) {
           </div>
         </div>
       </section>
-      <button className="return-button" onClick={() => setRoute("Chat")}>
+      <button 
+        className="return-button" 
+        onClick={() => setRoute("Chat")}
+        disabled={isLoading}
+      >
         Return to Chat
       </button>
     </div>

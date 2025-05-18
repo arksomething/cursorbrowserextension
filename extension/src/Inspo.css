@@ -1,0 +1,313 @@
+.inspo-container {
+  padding: 2em;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  align-items: center;
+}
+
+.inspo-logo {
+  object-fit: contain;
+}
+
+.inspo-container h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+  text-align: center;
+}
+
+.examples-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1em;
+  width: 100%;
+}
+
+@media (max-width: 400px) {
+  .examples-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.category h3 {
+  font-size: 12px;
+  font-weight: 500;
+  color: #666;
+  margin: 0 0 1em 0;
+}
+
+.examples-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75em;
+}
+
+.example-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  padding: 1em;
+  background: #f8f8f8;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center;
+  outline: none;
+  position: relative;
+  min-height: 80px;
+  box-sizing: border-box;
+}
+
+.example-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.example-card:not(.editing):hover {
+  background: #f0f0f0;
+  border-color: #ddd;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.example-card:not(.editing):active {
+  transform: scale(0.98);
+  background: #f0f0f0;
+  outline: none;
+}
+
+.example-card.editing {
+  cursor: default;
+  background: white;
+  border-color: #ddd;
+  transform: scale(1.01);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.example-card h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.example-card p {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
+}
+
+.example-text {
+  font-size: 12px;
+  color: #666;
+  font-weight: normal;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.prompt-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25em;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.5em;
+  margin-top: 0.25em;
+}
+
+.edit-prompt {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  margin-top: 0.5em;
+}
+
+.edit-prompt input {
+  padding: 0.5em;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 12px;
+  width: 100%;
+}
+
+.edit-buttons {
+  display: flex;
+  gap: 0.5em;
+}
+
+.edit-button,
+.reset-button,
+.save-button,
+.cancel-button {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  cursor: pointer;
+  border: 1px solid #ddd;
+  background: white;
+  color: #333;
+  transition: all 0.2s ease;
+}
+
+.edit-button:hover,
+.reset-button:hover,
+.save-button:hover,
+.cancel-button:hover {
+  background: #f0f0f0;
+}
+
+.save-button {
+  background: #000;
+  color: white;
+  border: none;
+}
+
+.save-button:hover {
+  background: #333;
+}
+
+.title-input,
+.example-input {
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  outline: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+.title-input:hover,
+.example-input:hover,
+.title-input:focus,
+.example-input:focus {
+  border: none;
+  background: transparent;
+}
+
+.title-input {
+  font-weight: 600;
+  font-size: 14px;
+  color: #333;
+  margin: 0;
+  height: 21px;
+}
+
+.example-input {
+  font-size: 12px;
+  color: #666;
+  font-weight: normal;
+  margin: 0;
+  height: 18px;
+}
+
+.edit-controls {
+  margin-top: 1em;
+  display: flex;
+  gap: 0.5em;
+  justify-content: center;
+}
+
+.edit-button,
+.done-button,
+.reset-all-button,
+.add-button {
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.edit-button,
+.done-button,
+.add-button {
+  background: #000;
+  color: white;
+  border: none;
+}
+
+.reset-all-button,
+.add-button {
+  background: white;
+  border: 1px solid #ddd;
+  color: #666;
+}
+
+.reset-all-button:hover,
+.add-button:hover {
+  background: #f0f0f0;
+  border-color: #ccc;
+}
+
+.edit-button:hover,
+.done-button:hover {
+  background: #333;
+}
+
+.remove-button {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  z-index: 2;
+  opacity: 0;
+  transform: scale(0) rotate(-90deg);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.example-card.editing .remove-button {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+  pointer-events: auto;
+}
+
+.remove-button:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.remove-button img {
+  width: 12px;
+  height: 12px;
+  opacity: 0.4;
+  transition: opacity 0.2s ease;
+}
+
+.remove-button:hover img {
+  opacity: 0.6;
+}
+
+.example-card.editing .title-input,
+.example-card.editing .example-input {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.example-card.editing h3,
+.example-card.editing .example-text {
+  opacity: 0;
+  transform: translateY(4px);
+  position: absolute;
+}

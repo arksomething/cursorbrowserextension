@@ -1,0 +1,94 @@
+/* Force light mode styles regardless of system preferences */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #ffffff;
+    color: #333333;
+  }
+
+  .demo-container {
+    background-color: #ffffff;
+    color: #333333;
+  }
+
+  .demo-header h1 {
+    color: #333333;
+  }
+
+  .demo-header p {
+    color: #666666;
+  }
+
+  .gif-container h3 {
+    color: #333333;
+  }
+
+  .gif-container p {
+    color: #666666;
+  }
+
+  .info-section h3 {
+    color: #333333;
+  }
+
+  .info-section p {
+    color: #666666;
+  }
+
+  .additional-info {
+    background: #f8f9fa;
+  }
+
+  .web-app-link {
+    color: #7c3aed;
+  }
+
+  .web-app-link:hover {
+    color: #6d28d9;
+  }
+
+  .keyboard-shortcut {
+    background: #f8f9fa;
+  }
+
+  .key {
+    background: #ffffff;
+    color: #7c3aed;
+    border-color: #e0e0e0;
+  }
+
+  .key-plus {
+    color: #666666;
+  }
+
+  .footer {
+    background-color: #f8f8f8;
+    border-color: #eeeeee;
+  }
+
+  .footer-content {
+    color: #666666;
+  }
+
+  .footer-links a {
+    color: #666666;
+  }
+
+  .footer-links a:hover {
+    color: #7c3aed;
+  }
+}
+
+/* Ensure consistent light background for the entire page */
+html, body {
+  background-color: #ffffff;
+}
+
+/* Override any potential dark mode styles from the system */
+.sidebar-header {
+  background-color: #ffffff;
+  border-color: #eeeeee;
+}
+
+.demo-gif {
+  background-color: #ffffff;
+}

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Sophon - Chat with context + autofill",
-  "version": "1.0.0.4",
+  "version": "1.0.0.5",
   "description": "High fidelity AI chat in Chrome. Chat with browser context and autofill",
   "permissions": ["tabs", "sidePanel"],
   "background": {
@@ -16,7 +16,7 @@
     }
   ],
   "action": {
-    "default_popup": "index.html"
+    "default_title": "Click to open sidebar"
   },
   "side_panel": {
     "default_path": "sidepanel.html"

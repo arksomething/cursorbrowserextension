@@ -1,0 +1,152 @@
+.pricing-page {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  padding: 24px;
+  margin: 0 auto;
+  box-sizing: content-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+  background-color: #ffffff;
+  gap: 24px;
+}
+
+.pricing-header {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.plans-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.product {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 24px;
+  background-color: white;
+}
+
+.product.premium {
+  border: 2px solid #007bff;
+}
+
+.plan-header {
+  margin-bottom: 16px;
+}
+
+.plan-header h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.price-details {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.current-price {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.per-month {
+  color: #666;
+}
+
+.features {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0;
+}
+
+.features li {
+  margin: 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.features li::before {
+  content: "✓";
+  color: #007bff;
+}
+
+.upgrade-button {
+  width: 100%;
+  padding: 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.upgrade-button:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.upgrade-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.return-button {
+  padding: 8px 16px;
+  background-color: transparent;
+  color: #007bff;
+  border: 1px solid #007bff;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.return-button:hover:not(:disabled) {
+  background-color: #f0f8ff;
+}
+
+.return-button:disabled {
+  color: #ccc;
+  border-color: #ccc;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: #dc3545;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  padding: 12px;
+  margin: 8px 0;
+  width: 100%;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .pricing-page {
+    padding: 16px;
+  }
+
+  .plans-container {
+    gap: 16px;
+  }
+
+  .product {
+    padding: 16px;
+  }
+}

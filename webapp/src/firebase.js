@@ -7,7 +7,7 @@ import {
   signOut,
   onAuthStateChanged,
   sendPasswordResetEmail 
-} from 'firebase/auth/web-extension';
+} from 'firebase/auth';
 
 
 

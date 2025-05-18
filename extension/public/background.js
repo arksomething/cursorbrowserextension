@@ -25,6 +25,32 @@ chrome.commands.onCommand.addListener(async (command) => {
   }
 });
 
+chrome.action.onClicked.addListener(async (tab) => {
+  console.log(`Action clicked, cur isActive: ${isActive}`);
+
+  try {
+    if (isActive) {
+      await chrome.windows.getCurrent(w => chrome.sidePanel.open({windowId: w.id}))
+      isActive = !isActive;
+      return
+    }
+
+    let queryOptions = { active: true, lastFocusedWindow: true };
+    let [tab] = await chrome.tabs.query(queryOptions);
+
+    const response = await chrome.tabs.sendMessage(tab.id, {action: "commandSend"})
+
+    if (!isActive && !response) {
+      await chrome.sidePanel.setOptions({ enabled: false });
+      await chrome.sidePanel.setOptions({ enabled: true });
+      isActive = !isActive;
+    }
+  } catch (error) {
+    console.error("Error in action clicked: ", error);
+  }
+});
+
+
 
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
     if (request.action === "getIsActive") {
@@ -114,5 +140,10 @@ chrome.tabs.onUpdated.addListener((tabId, change, tab) => {
   }
 });
 
+chrome.runtime.onInstalled.addListener((details) => {
+  if (details.reason === "install") {
+    chrome.tabs.create({ url: "https://sophonextension.vercel.app/" }); // or any other page
+  }
+});
 
 
