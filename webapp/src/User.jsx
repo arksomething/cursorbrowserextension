@@ -20,7 +20,7 @@ const User = ({ setRoute, userInfo }) => {
 
   const handleSubscriptionInfo = async () => {
     // Open subscription management in a new tab
-    chrome.tabs.create({ url: "https://billing.stripe.com/p/login/test_7sY6oHfxbfvcfwhecF6Ri00" }); // TODO: change to the actual URL
+    window.open("https://billing.stripe.com/p/login/28E28r9bidBe49dcIofQI00", "_blank");
   }
 
   return (
@@ -45,7 +45,7 @@ const User = ({ setRoute, userInfo }) => {
           {userInfo?.plan === 'Plus' ? (
             <button className="main-button" onClick={handleSubscriptionInfo}>Subscription</button>
           ) : (
-            <button className="main-button premium-button" onClick={() => setRoute("Subscribe")}>Subscribe</button>
+            <button className="main-button premium-button" onClick={() => setRoute("Subscribe")}>Premium</button>
           )}
           <LogoutButton className="main-button"/>
       </div>

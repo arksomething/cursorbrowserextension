@@ -222,6 +222,7 @@ const Sidebar = ({ data, setRoute }) => {
             <button 
               className="reset-prompts" 
               onClick={() => {
+                stopMessageStream();
                 setMessages([]);
                 setPrompt('');
               }}

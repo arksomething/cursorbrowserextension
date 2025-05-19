@@ -46,8 +46,8 @@ function Landing() {
       <Header />
       <div className="landing-content">
         <img src={logo128} alt="Logo" width="54" height="54" style={{ marginBottom: '24px' }} />
-        <h1>Welcome to Sophon</h1>
-        <p>Your intelligent browser companion</p>
+        <h1>Stop copy/pasting today</h1>
+        <p>Intelligent browser chat with context and autofill. Designed with care.</p>
         <div className="cta-buttons">
           <a href="https://chromewebstore.google.com/detail/sophon-chat-with-context/pkmkmplckmndoendhcobbbieicoocmjo?authuser=0&hl=en" target="_blank" rel="noopener noreferrer" className="main-button premium-button">Download Extension</a>
           <a href="/extension" className="main-button">Try Web App</a>

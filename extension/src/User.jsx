@@ -20,7 +20,7 @@ const User = ({ setRoute, userInfo }) => {
 
   const handleSubscriptionInfo = async () => {
     // Open subscription management in a new tab
-    chrome.tabs.create({ url: "https://billing.stripe.com/p/login/test_7sY6oHfxbfvcfwhecF6Ri00" }); // TODO: change to the actual URL
+    chrome.tabs.create({ url: "https://billing.stripe.com/p/login/28E28r9bidBe49dcIofQI00" }); // TODO: change to the actual URL
   }
 
   return (
@@ -35,7 +35,9 @@ const User = ({ setRoute, userInfo }) => {
             <p>Name: {userInfo.name}</p>
             <p>Email: {userInfo.email}</p>
             <p>Plan: {userInfo.plan}</p>
-            <p>Contact us at ark296296@gmail.com!</p>
+            <p>Try our webapp <a href="https://sophonextension.vercel.app/extension" target="_blank" rel="noopener noreferrer">here</a></p>
+            <p>Learn how to use Sophon <a href="https://sophonextension.vercel.app/demo" target="_blank" rel="noopener noreferrer">here</a></p>
+            <p>Contact us for support, bugs, or anything else at ark296296@gmail.com!</p>
           </div>
         ) : (
           <div>No user information available</div>
@@ -45,7 +47,7 @@ const User = ({ setRoute, userInfo }) => {
           {userInfo?.plan === 'Plus' ? (
             <button className="main-button" onClick={handleSubscriptionInfo}>Subscription</button>
           ) : (
-            <button className="main-button premium-button" onClick={() => setRoute("Subscribe")}>Subscribe</button>
+            <button className="main-button premium-button" onClick={() => setRoute("Subscribe")}>Premium</button>
           )}
           <LogoutButton className="main-button"/>
       </div>

@@ -167,13 +167,13 @@ exports.routerEndpoint = onRequest({ cors: true, secrets: [OPENROUTER_API_KEY] }
 
     // If user has Plus plan, don't check credits
     if (plan !== 'Plus' && credits <= 0) {
-      res.write(JSON.stringify({ error: "You've run out of credits. Please upgrade to Plus or purchase more credits." }));
+      res.write(JSON.stringify({ error: "You've run out of free usage. Please upgrade to Plus by clicking the Premium button in the header." }));
       res.end();
       return;
     }
 
     if (plan === 'Plus' && plusModels.includes(model) && premiumCredits <= 0) {
-      res.write(JSON.stringify({ error: "You've run out of premium credits. Your credits will replenish in the next month." }));
+      res.write(JSON.stringify({ error: "You've run out of premium usage. Your premium usage will replenish in the next month. Regular models are still available and unlimited." }));
       res.end();
       return;
     }

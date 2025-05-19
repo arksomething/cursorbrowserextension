@@ -142,7 +142,7 @@ chrome.tabs.onUpdated.addListener((tabId, change, tab) => {
 
 chrome.runtime.onInstalled.addListener((details) => {
   if (details.reason === "install") {
-    chrome.tabs.create({ url: "https://sophonextension.vercel.app/" }); // or any other page
+    chrome.tabs.create({ url: "https://sophonextension.vercel.app/demo" }); // or any other page
   }
 });
 
